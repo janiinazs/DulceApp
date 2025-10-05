@@ -23,12 +23,12 @@ class RegistroActivity : AppCompatActivity() {
         }
 
         // Referencias a los campos
-        val nombreEditText = findViewById<TextInputEditText>(R.id.editTextNombre)
-        val emailEditText = findViewById<TextInputEditText>(R.id.editTextEmail)
-        val passwordEditText = findViewById<TextInputEditText>(R.id.editTextPassword)
-        val registrarButton = findViewById<Button>(R.id.buttonRegistrar)
-        val loginTextView = findViewById<TextView>(R.id.textViewLogin)
-
+        val nombreEditText = findViewById<TextInputEditText>(R.id.etNombre)
+        val emailEditText = findViewById<TextInputEditText>(R.id.etCorreo)
+        val passwordEditText = findViewById<TextInputEditText>(R.id.etContraseña)
+        val registrarButton = findViewById<Button>(R.id.btnRegistrarse)
+        val loginTextView = findViewById<TextView>(R.id.tvIrALogin)
+        
         // Acción del botón "Registrarse"
         registrarButton.setOnClickListener {
             val nombre = nombreEditText.text.toString().trim()

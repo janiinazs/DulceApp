@@ -19,17 +19,17 @@ class LoginActivity : AppCompatActivity() {
         setContentView(R.layout.activity_login)
 
         // Aplicar padding para barras del sistema
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.layoutPrincipalLogin)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
 
         // Conectar vistas
-        val emailEditText = findViewById<TextInputEditText>(R.id.email_edit_text)
-        val passwordEditText = findViewById<TextInputEditText>(R.id.password_input_text)
-        val loginButton = findViewById<Button>(R.id.login_button)
-        val registerText = findViewById<TextView>(R.id.register_text)
+        val emailEditText = findViewById<TextInputEditText>(R.id.etCorreo)
+        val passwordEditText = findViewById<TextInputEditText>(R.id.etContraseña)
+        val loginButton = findViewById<Button>(R.id.btnEntrar)
+        val registerText = findViewById<TextView>(R.id.tvRegistrarse)
 
         // Lógica del botón de "Entrar"
         loginButton.setOnClickListener {

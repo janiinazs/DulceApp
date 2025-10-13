@@ -10,13 +10,19 @@ import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import com.google.android.material.textfield.TextInputEditText
-
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
 
 class LoginActivity : AppCompatActivity() {
+    private lateinit var userRepository: UserRepository
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_login)
+
+        // Inicializar repositorio (ajustar según cómo se inicialice AppDatabase en tu proyecto)
+        val userDao = AppDatabase.getDatabase(this).userDao() // Asegúrate de tener AppDatabase configurado
+        userRepository = UserRepository(userDao)
 
         // Aplicar padding para barras del sistema
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
@@ -44,6 +50,23 @@ class LoginActivity : AppCompatActivity() {
             if (password.isEmpty()) {
                 passwordEditText.error = "Ingresa tu contraseña"
                 return@setOnClickListener
+            }
+
+            // Intentar iniciar sesión
+            lifecycleScope.launch {
+                try {
+                    val user = userRepository.login(email, password)
+                    if (user != null) {
+                        Toast.makeText(this@LoginActivity, "Inicio de sesión exitoso", Toast.LENGTH_SHORT).show()
+                        // Redirigir a pantalla principal o dashboard
+                        startActivity(Intent(this@LoginActivity, MainActivity::class.java))
+                        finish()
+                    } else {
+                        Toast.makeText(this@LoginActivity, "Credenciales incorrectas", Toast.LENGTH_SHORT).show()
+                    }
+                } catch (e: Exception) {
+                    Toast.makeText(this@LoginActivity, "Error al iniciar sesión: ${e.message}", Toast.LENGTH_SHORT).show()
+                }
             }
 
             // Aquí iría la verificación real con una base de datos

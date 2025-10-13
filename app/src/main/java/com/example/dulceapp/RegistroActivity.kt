@@ -9,11 +9,18 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.google.android.material.textfield.TextInputEditText
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
 
 class RegistroActivity : AppCompatActivity() {
+    private lateinit var userRepository: UserRepository
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_registro)
+
+        // Inicializar repositorio (ajustar según cómo se inicialice AppDatabase en tu proyecto)
+        val userDao = AppDatabase.getDatabase(this).userDao() // Asegúrate de tener AppDatabase configurado
+        userRepository = UserRepository(userDao)
 
         // Ajustar insets de sistema
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { view, insets ->
@@ -49,11 +56,20 @@ class RegistroActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            Toast.makeText(this, "Registro exitoso: $nombre", Toast.LENGTH_SHORT).show()
+            // Intentar registrarse
+            lifecycleScope.launch {
+                try {
+                    val user = User(username = nombre, email = email, password = password)
+                    userRepository.signUp(user)
+                    Toast.makeText(this@RegistroActivity, "Registro exitoso: $nombre", Toast.LENGTH_SHORT).show()
 
-            // Ejemplo: ir a la pantalla de login después del registro
-            startActivity(Intent(this, LoginActivity::class.java))
-            finish()
+                    // Ir a la pantalla de login después del registro
+                    startActivity(Intent(this@RegistroActivity, LoginActivity::class.java))
+                    finish()
+                } catch (e: Exception) {
+                    Toast.makeText(this@RegistroActivity, "Error al registrarse: ${e.message}", Toast.LENGTH_SHORT).show()
+                }
+            }
         }
 
         // Ir a LoginActivity desde el texto

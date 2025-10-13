@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy.Companion.ABORT
 import androidx.room.Query
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface UserDao {
@@ -15,4 +16,8 @@ interface UserDao {
 
     @Query("SELECT COUNT(*) FROM users WHERE email = :email OR username = :username")
     suspend fun userExists(username: String, email: String): Int
+
+    @Query("SELECT * FROM users")
+    fun getAllUsers(): Flow<List<User>>
+
 }

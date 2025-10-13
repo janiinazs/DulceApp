@@ -2,21 +2,25 @@ package com.example.dulceapp
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Button
-import android.widget.TextView
+import android.util.Patterns
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import com.google.android.material.textfield.TextInputEditText
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
+import com.example.dulceapp.databinding.ActivityRegistroBinding
 
 class RegistroActivity : AppCompatActivity() {
     private lateinit var userRepository: UserRepository
+    private lateinit var binding: ActivityRegistroBinding // <-- USA VIEW BINDING
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_registro)
+        // 2. Infla el layout con View Binding.
+        binding = ActivityRegistroBinding.inflate(layoutInflater)
+        // 3. Establece la vista con el root del binding.
+        setContentView(binding.root)
 
         // Inicializar repositorio (ajustar según cómo se inicialice AppDatabase en tu proyecto)
         val userDao = AppDatabase.getDatabase(this).userDao() // Asegúrate de tener AppDatabase configurado
@@ -29,31 +33,45 @@ class RegistroActivity : AppCompatActivity() {
             insets
         }
 
-        // Referencias a los campos
-        val nombreEditText = findViewById<TextInputEditText>(R.id.editTextNombre)
-        val emailEditText = findViewById<TextInputEditText>(R.id.editTextEmail)
-        val passwordEditText = findViewById<TextInputEditText>(R.id.editTextPassword)
-        val registrarButton = findViewById<Button>(R.id.buttonRegistrar)
-        val loginTextView = findViewById<TextView>(R.id.textViewLogin)
+        binding.buttonRegistrar.setOnClickListener {
+            val nombre = binding.editTextNombre.text.toString().trim()
+            val email = binding.editTextEmail.text.toString().trim()
+            val password = binding.editTextPassword.text.toString().trim()
 
-        // Acción del botón "Registrarse"
-        registrarButton.setOnClickListener {
-            val nombre = nombreEditText.text.toString().trim()
-            val email = emailEditText.text.toString().trim()
-            val password = passwordEditText.text.toString().trim()
+            // ==== LÓGICA DE VALIDACIÓN MEJORADA ====
+            var formValido = true
 
-            // Validaciones simples
+            // Validar nombre
             if (nombre.isEmpty()) {
-                nombreEditText.error = "Ingresa tu nombre"
-                return@setOnClickListener
+                binding.textInputLayoutNombre.error = "El nombre no puede estar vacío"
+                formValido = false
+            } else {
+                binding.textInputLayoutNombre.error = null
             }
+
+            // Validar correo
             if (email.isEmpty()) {
-                emailEditText.error = "Ingresa tu correo"
-                return@setOnClickListener
+                binding.textInputLayoutEmail.error = "El correo no puede estar vacío"
+                formValido = false
+            } else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                binding.textInputLayoutEmail.error = "Formato de correo inválido"
+                formValido = false
+            } else {
+                binding.textInputLayoutEmail.error = null
             }
+            // Validar contraseña
             if (password.isEmpty()) {
-                passwordEditText.error = "Ingresa una contraseña"
-                return@setOnClickListener
+                binding.textInputLayoutPassword.error = "La contraseña no puede estar vacía"
+                formValido = false
+            } else if (password.length < 6) {
+                binding.textInputLayoutPassword.error = "La contraseña debe tener al menos 6 caracteres"
+                formValido = false
+            } else {
+                binding.textInputLayoutPassword.error = null
+            }
+
+            if (!formValido) {
+                return@setOnClickListener // Si hay errores, no continúes
             }
 
             // Intentar registrarse
@@ -62,18 +80,17 @@ class RegistroActivity : AppCompatActivity() {
                     val user = User(username = nombre, email = email, password = password)
                     userRepository.signUp(user)
                     Toast.makeText(this@RegistroActivity, "Registro exitoso: $nombre", Toast.LENGTH_SHORT).show()
-
-                    // Ir a la pantalla de login después del registro
                     startActivity(Intent(this@RegistroActivity, LoginActivity::class.java))
                     finish()
                 } catch (e: Exception) {
-                    Toast.makeText(this@RegistroActivity, "Error al registrarse: ${e.message}", Toast.LENGTH_SHORT).show()
+                    // Posible usuario duplicado
+                    binding.textInputLayoutEmail.error = "El correo o usuario ya existe"
                 }
             }
         }
 
         // Ir a LoginActivity desde el texto
-        loginTextView.setOnClickListener {
+        binding.textViewLogin.setOnClickListener {
             startActivity(Intent(this, LoginActivity::class.java))
             finish()
         }

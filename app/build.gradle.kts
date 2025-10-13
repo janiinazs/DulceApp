@@ -38,6 +38,7 @@ android {
 
 dependencies {
 
+    implementation(libs.kotlinx.coroutines.android)
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
     kapt(libs.room.compiler)

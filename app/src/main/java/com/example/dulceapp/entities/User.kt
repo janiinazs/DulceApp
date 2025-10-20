@@ -1,4 +1,4 @@
-package com.example.dulceapp
+package com.example.dulceapp.entities
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

@@ -1,9 +1,10 @@
-package com.example.dulceapp
+package com.example.dulceapp.repo
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy.Companion.ABORT
 import androidx.room.Query
+import com.example.dulceapp.entities.User
 import kotlinx.coroutines.flow.Flow
 
 @Dao

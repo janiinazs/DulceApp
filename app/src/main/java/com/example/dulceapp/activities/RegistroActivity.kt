@@ -1,4 +1,4 @@
-package com.example.dulceapp
+package com.example.dulceapp.activities
 
 import android.content.Intent
 import android.os.Bundle
@@ -8,6 +8,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
+import com.example.dulceapp.R
+import com.example.dulceapp.entities.User
+import com.example.dulceapp.repo.UserRepository
+import com.example.dulceapp.database.AppDatabase
 import kotlinx.coroutines.launch
 import com.example.dulceapp.databinding.ActivityRegistroBinding
 
@@ -79,9 +83,22 @@ class RegistroActivity : AppCompatActivity() {
                 try {
                     val user = User(username = nombre, email = email, password = password)
                     userRepository.signUp(user)
-                    Toast.makeText(this@RegistroActivity, "Registro exitoso: $nombre", Toast.LENGTH_SHORT).show()
-                    startActivity(Intent(this@RegistroActivity, LoginActivity::class.java))
-                    finish()
+//                    Toast.makeText(this@RegistroActivity, "Registro exitoso: $nombre", Toast.LENGTH_SHORT).show()
+//                    startActivity(Intent(this@RegistroActivity, LoginActivity::class.java))
+//                    finish()
+                    com.example.dulceapp.services.FirebaseService.saveUser(user) { success, errorMsg ->
+                        runOnUiThread {
+                            if (success) {
+                                Toast.makeText(this@RegistroActivity, "Registro exitoso: $nombre (local + firestore)", Toast.LENGTH_SHORT).show()
+                            } else {
+                                // We still consider the local registration successful, but inform about firestore issue.
+                                Toast.makeText(this@RegistroActivity, "Registro local OK, pero Firestore falló: ${errorMsg
+                                ?: "error desconocido"}", Toast.LENGTH_LONG).show()
+                            }
+                            startActivity(Intent(this@RegistroActivity, LoginActivity::class.java))
+                            finish()
+                        }
+                    }
                 } catch (e: Exception) {
                     // Posible usuario duplicado
                     binding.textInputLayoutEmail.error = "El correo o usuario ya existe"

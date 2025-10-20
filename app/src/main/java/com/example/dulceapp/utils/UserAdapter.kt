@@ -1,11 +1,10 @@
-package com.example.dulceapp // <-- Paquete organizado
+package com.example.dulceapp.utils
 
-//import androidx.compose.ui.semantics.text
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.dulceapp.databinding.ItemUsuarioBinding
-
+import com.example.dulceapp.entities.User
 
 class UserAdapter(private var userList: List<User>) : RecyclerView.Adapter<UserAdapter.UserViewHolder>() {
 

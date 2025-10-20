@@ -1,5 +1,6 @@
-package com.example.dulceapp
+package com.example.dulceapp.repo
 
+import com.example.dulceapp.entities.User
 import kotlinx.coroutines.flow.Flow
 
 // #TODO: esto me falto we

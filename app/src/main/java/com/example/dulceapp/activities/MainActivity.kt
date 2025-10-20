@@ -1,11 +1,16 @@
-package com.example.dulceapp // Paquete principal
+package com.example.dulceapp.activities // Paquete principal
 
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.dulceapp.utils.UserAdapter
+import com.example.dulceapp.repo.UserRepository
+import com.example.dulceapp.database.AppDatabase
 import com.example.dulceapp.databinding.ActivityMainBinding
+import com.example.dulceapp.services.FirebaseService
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
@@ -24,7 +29,11 @@ class MainActivity : AppCompatActivity() {
         // 2. Configura el RecyclerView
         setupRecyclerView()
         // 3. Observa los cambios en la base de datos
-        observeUsers()
+//        observeUsers()
+        // 3. Configura botones: load from Room, load from Firestore, clear
+        binding.btnLoadRoom.setOnClickListener { loadUsersFromRoomOnce() }
+        binding.btnLoadFirebase.setOnClickListener { loadUsersFromFirestore() }
+        binding.btnClear.setOnClickListener { clearUsers() }
 
         binding.fabLogout.setOnClickListener {
             // Crea un intent para ir a LoginActivity
@@ -52,7 +61,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun observeUsers() {
+    /*private fun observeUsers() {
         // Usa una corrutina atada al ciclo de vida de la Activity
         lifecycleScope.launch {
             // "collect" escuchará continuamente los cambios emitidos por el Flow
@@ -61,5 +70,34 @@ class MainActivity : AppCompatActivity() {
                 userAdapter.updateData(listOfUsers)
             }
         }
+    }*/
+
+    private fun loadUsersFromRoomOnce() {
+        lifecycleScope.launch {
+            try {
+                // Collect the current list once
+                val users = userRepository.getAllUsers().first()
+                userAdapter.updateData(users)
+            } catch (e: Exception) {
+                // Optionally show a toast or log
+                }
+            }
+        }
+
+    private fun loadUsersFromFirestore() {
+        // Use FirebaseService to fetch users, update adapter on UI thread
+        FirebaseService.fetchAllUsers { users, error ->
+            runOnUiThread {
+                if (users != null) {
+                    userAdapter.updateData(users)
+                } else {
+                    // Optionally show an error (toast/log). Keep UI responsive.
+                }
+            }
+        }
+    }
+
+    private fun clearUsers() {
+        userAdapter.updateData(emptyList())
     }
 }

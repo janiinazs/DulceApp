@@ -1,4 +1,4 @@
-package com.example.dulceapp
+package com.example.dulceapp.activities
 
 import android.content.Intent
 import android.os.Bundle
@@ -9,6 +9,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
+import com.example.dulceapp.R
+import com.example.dulceapp.repo.UserRepository
+import com.example.dulceapp.database.AppDatabase
 import com.example.dulceapp.databinding.ActivityLoginBinding
 import kotlinx.coroutines.launch
 

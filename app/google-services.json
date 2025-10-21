@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "111187585123",
+    "project_id": "dulceapp-2bf61",
+    "storage_bucket": "dulceapp-2bf61.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:111187585123:android:57a1b2b4cdd00f99d17056",
+        "android_client_info": {
+          "package_name": "com.example.dulceapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDYoZiXEQe-xnJHX9ggzc9ihnshDUOmNkQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -4,30 +4,26 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import com.example.dulceapp.User
 
 @Database(entities = [User::class], version = 1, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun userDao(): UserDao
 
     companion object {
-        @Volatile private var instance: AppDatabase? = null
-        const val DATABASE_NAME = "dulce_database"
-
-
-        fun getDatabase(context: Context): AppDatabase {
-            return instance ?: synchronized(this) {
-                Room.databaseBuilder(
+        @Volatile
+        private var INSTANCE: AppDatabase? = null
+        fun getInstance(context: Context): AppDatabase {
+            return INSTANCE ?: synchronized(this) {
+                val instance = Room.databaseBuilder(
                     context.applicationContext,
                     AppDatabase::class.java,
-                    DATABASE_NAME
-                )
-                    // Permite a Room recrear las tablas si actualizas la versión sin una migración.
-                    // Es útil durante el desarrollo.
-                    .fallbackToDestructiveMigration(false)
-                    .build()
-                    .also { instance = it }
+                    "dulce_app_database" // Nombre de tu base de datos
+                ).build()
+                INSTANCE = instance
+                instance
             }
         }
     }
-
 }
+

@@ -23,13 +23,14 @@ class RegistroActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         // Inicializar repositorio (ajustar según cómo se inicialice AppDatabase en tu proyecto)
-        val userDao = AppDatabase.getDatabase(this).userDao() // Asegúrate de tener AppDatabase configurado
+        val userDao = AppDatabase.getInstance(this).userDao() // Asegúrate de tener AppDatabase configurado
         userRepository = UserRepository(userDao)
 
         // Ajustar insets de sistema
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { view, insets ->
+        // Ajustar insets de sistema
+        ViewCompat.setOnApplyWindowInsetsListener(binding.main) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            view.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom) // <-- Usar 'v'
             insets
         }
 

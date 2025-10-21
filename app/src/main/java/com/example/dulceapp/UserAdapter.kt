@@ -1,13 +1,14 @@
-package com.example.dulceapp // <-- Paquete organizado
+package com.example.dulceapp 
 
-//import androidx.compose.ui.semantics.text
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.dulceapp.databinding.ItemUsuarioBinding
 
 
-class UserAdapter(private var userList: List<User>) : RecyclerView.Adapter<UserAdapter.UserViewHolder>() {
+class UserAdapter : ListAdapter<User, UserAdapter.UserViewHolder>(DiffCallback) {
 
     // El ViewHolder contiene la vista de cada fila (item_usuario.xml)
     inner class UserViewHolder(val binding: ItemUsuarioBinding) : RecyclerView.ViewHolder(binding.root)
@@ -20,17 +21,18 @@ class UserAdapter(private var userList: List<User>) : RecyclerView.Adapter<UserA
 
     // Rellena la fila con los datos del usuario correspondiente
     override fun onBindViewHolder(holder: UserViewHolder, position: Int) {
-        val currentUser = userList[position]
+        val currentUser = getItem(position)
         holder.binding.textViewUsername.text = currentUser.username
         holder.binding.textViewEmail.text = currentUser.email
     }
 
-    // Devuelve el total de elementos
-    override fun getItemCount(): Int = userList.size
+    companion object DiffCallback : DiffUtil.ItemCallback<User>() {
+        override fun areItemsTheSame(oldItem: User, newItem: User): Boolean {
+            return oldItem.id == newItem.id
+        }
 
-    // Función para actualizar la lista desde MainActivity
-    fun updateData(newList: List<User>) {
-        userList = newList
-        notifyDataSetChanged() // Refresca el RecyclerView
+        override fun areContentsTheSame(oldItem: User, newItem: User): Boolean {
+            return oldItem == newItem
+        }
     }
 }

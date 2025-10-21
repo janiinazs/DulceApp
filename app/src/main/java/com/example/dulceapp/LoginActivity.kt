@@ -24,11 +24,11 @@ class LoginActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         // Inicializar repositorio (ajustar según cómo se inicialice AppDatabase en tu proyecto)
-        val userDao = AppDatabase.getDatabase(this).userDao() // Asegúrate de tener AppDatabase configurado
+        val userDao = AppDatabase.getInstance(this).userDao() // Asegúrate de tener AppDatabase configurado
         userRepository = UserRepository(userDao)
 
         // Aplicar padding para barras del sistema
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
+        ViewCompat.setOnApplyWindowInsetsListener(binding.main) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
@@ -85,13 +85,6 @@ class LoginActivity : AppCompatActivity() {
                     Toast.makeText(this@LoginActivity, "Error al iniciar sesión: ${e.message}", Toast.LENGTH_SHORT).show()
                 }
             }
-
-            // Aquí iría la verificación real con una base de datos
-            // Por ahora solo mostramos un mensaje simulado
-            Toast.makeText(this, "Inicio de sesión exitoso", Toast.LENGTH_SHORT).show()
-
-            // Redirigir a pantalla principal o dashboard si existe
-            // startActivity(Intent(this, MainActivity::class.java))
         }
 
         // Acción al hacer clic en "¿No tienes cuenta? Regístrate aquí."

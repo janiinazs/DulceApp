@@ -36,6 +36,28 @@ object FirebaseService {
         }
     }
 
+    fun login(email: String, password: String, callback: (User?, String?) -> Unit) {
+        try {
+            firestore.collection("users")
+                .whereEqualTo("email", email)
+                .whereEqualTo("password", password)
+                .get()
+                .addOnSuccessListener { querySnapshot ->
+                    if (querySnapshot.isEmpty) {
+                        callback(null, "Usuario o contraseña incorrectos")
+                    } else {
+                        val user = querySnapshot.documents.first().toObject(User::class.java)
+                        callback(user, null)
+                    }
+                }
+                .addOnFailureListener { e ->
+                    callback(null, e.message)
+                }
+        } catch (e: Exception) {
+            callback(null, e.message)
+        }
+    }
+
     /**
      * Fetch all users from Firestore "users" collection.
      * Returns a list of User via callback: (users, errorMessage)

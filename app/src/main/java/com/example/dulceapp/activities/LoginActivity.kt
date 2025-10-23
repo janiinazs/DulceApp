@@ -13,6 +13,7 @@ import com.example.dulceapp.R
 import com.example.dulceapp.repo.UserRepository
 import com.example.dulceapp.database.AppDatabase
 import com.example.dulceapp.databinding.ActivityLoginBinding
+import com.example.dulceapp.services.FirebaseService
 import kotlinx.coroutines.launch
 
 class LoginActivity : AppCompatActivity() {
@@ -74,24 +75,52 @@ class LoginActivity : AppCompatActivity() {
             // Intentar iniciar sesión
             lifecycleScope.launch {
                 try {
-                    val user = userRepository.login(email, password)
-                    if (user != null) {
-                        Toast.makeText(this@LoginActivity, "Inicio de sesión exitoso", Toast.LENGTH_SHORT).show()
-                        startActivity(Intent(this@LoginActivity, MainActivity::class.java))
-                        finish()
-                    } else {
-                        // Muestra el error en ambos campos para no dar pistas al atacante
-                        binding.emailInputLayout.error = "Correo o contraseña incorrectos"
-                        binding.passwordInputLayout.error = "Correo o contraseña incorrectos"
+                    // Llama a la función suspend y espera el resultado
+                    com.example.dulceapp.services.FirebaseService.login(email, password) { user, errorMessage ->
+                        runOnUiThread {
+                            // Este bloque de código se ejecutará en el futuro,
+                            // cuando Firebase termine la operación de login.
+
+                            if (user != null) {
+                                // ÉXITO: El usuario se encontró y la contraseña es correcta
+                                Toast.makeText(this@LoginActivity, "Inicio de sesión exitoso", Toast.LENGTH_SHORT).show()
+                                val intent = Intent(this@LoginActivity, MainActivity::class.java)
+                                startActivity(intent)
+                                finish() // Cierra LoginActivity para que el usuario no pueda volver atrás
+                            } else {
+                                // ERROR: Ocurrió un problema, `errorMessage` tendrá los detalles
+                                Toast.makeText(this@LoginActivity, "Error: $errorMessage", Toast.LENGTH_LONG).show()
+
+                                // Opcional: Mostrar error en los campos para dar feedback visual
+                                binding.emailInputLayout.error = "Verifica tu correo o contraseña"
+                                binding.passwordInputLayout.error = " " // Un espacio para que se muestre el indicador de error
+                            }
+                        }
+
                     }
+
+                    // Si la función no lanzó una excepción, el login fue exitoso
+//                    if (user != null) {
+//                        Toast.makeText(this@LoginActivity, "Inicio de sesión exitoso", Toast.LENGTH_SHORT).show()
+//                        startActivity(Intent(this@LoginActivity, MainActivity::class.java))
+//                        finish() // Cierra esta actividad
+//                    } else {
+//                        // Caso en que la función devuelve null sin lanzar excepción (ej: usuario no existe)
+//                        Toast.makeText(this@LoginActivity, "Usuario no encontrado o contraseña incorrecta", Toast.LENGTH_LONG).show()
+//                    }
                 } catch (e: Exception) {
-                    Toast.makeText(this@LoginActivity, "Error al iniciar sesión: ${e.message}", Toast.LENGTH_SHORT).show()
+                    // Si Firebase lanza una excepción (red, contraseña incorrecta, etc.), la capturamos
+                    Toast.makeText(this@LoginActivity, "Error: ${e.message}", Toast.LENGTH_LONG).show()
+
+                    // Feedback visual opcional
+                    binding.emailInputLayout.error = "Verifica tu correo o contraseña"
+                    binding.passwordInputLayout.error = " " // Espacio para mostrar el indicador de error
                 }
             }
 
             // Aquí iría la verificación real con una base de datos
             // Por ahora solo mostramos un mensaje simulado
-            Toast.makeText(this, "Inicio de sesión exitoso", Toast.LENGTH_SHORT).show()
+            //Toast.makeText(this, "Inicio de sesión exitoso", Toast.LENGTH_SHORT).show()
 
             // Redirigir a pantalla principal o dashboard si existe
             // startActivity(Intent(this, MainActivity::class.java))

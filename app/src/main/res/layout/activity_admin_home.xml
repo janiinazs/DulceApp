@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:background="#FFF7F0"
+    android:padding="16dp"
+    tools:context=".activities.AdminHomeActivity">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Panel de Administrador"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:textColor="#5D4037"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="¡Bienvenido, Admin!"
+        android:textSize="16sp"
+        android:textColor="#8D6E63"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/button_view_orders"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:text="Ver Pedidos"
+        app:backgroundTint="#6D4C41"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/button_manage_users"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Gestionar Usuarios"
+        app:backgroundTint="#6D4C41"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/button_add_product"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Añadir Productos"
+        app:backgroundTint="#6D4C41"/>
+        
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/button_manage_products"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Gestionar Productos"
+        app:backgroundTint="#6D4C41"/>
+
+    <!-- BOTONES DE PROMOCIONES AÑADIDOS -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/button_add_promotion"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Añadir Promociones"
+        app:backgroundTint="#5D4037"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/button_manage_promotions"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Gestionar Promociones"
+        app:backgroundTint="#5D4037"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/button_logout"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="48dp"
+        android:text="Cerrar Sesión"
+        app:strokeColor="#5D4037" 
+        android:textColor="#5D4037"/>
+
+</LinearLayout>

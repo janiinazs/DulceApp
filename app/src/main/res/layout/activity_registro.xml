@@ -88,6 +88,54 @@
 
     </com.google.android.material.textfield.TextInputLayout>
 
+    <!-- CAMPO DE CONFIRMAR CONTRASEÑA AÑADIDO -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/textInputLayoutConfirmPassword"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="32dp"
+        android:hint="Confirmar Contraseña"
+        app:boxStrokeColor="#A1887F"
+        app:hintTextColor="#A1887F"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textInputLayoutPassword">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/editTextConfirmPassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textPassword" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- CAMPO DE PALABRA CLAVE AÑADIDO -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/textInputLayoutKeyword"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="32dp"
+        android:hint="Palabra Clave (para recuperación de contraseña)"
+        app:boxStrokeColor="#A1887F"
+        app:hintTextColor="#A1887F"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textInputLayoutConfirmPassword">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/editTextKeyword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="text" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
     <Button
         android:id="@+id/buttonRegistrar"
         android:layout_width="0dp"
@@ -100,7 +148,7 @@
         android:textColor="#FFFFFF"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textInputLayoutPassword" />
+        app:layout_constraintTop_toBottomOf="@+id/textInputLayoutKeyword" />
 
     <TextView
         android:id="@+id/textViewLogin"

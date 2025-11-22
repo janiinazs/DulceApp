@@ -15,19 +15,18 @@ abstract class AppDatabase : RoomDatabase() {
         @Volatile private var instance: AppDatabase? = null
         const val DATABASE_NAME = "dulce_database"
 
-
         fun getDatabase(context: Context): AppDatabase {
             return instance ?: synchronized(this) {
-                Room.databaseBuilder(
+                val newInstance = Room.databaseBuilder(
                     context.applicationContext,
                     AppDatabase::class.java,
                     DATABASE_NAME
                 )
-                    // Permite a Room recrear las tablas si actualizas la versión sin una migración.
-                    // Es útil durante el desarrollo.
-                    .fallbackToDestructiveMigration(false)
+                    // Este método NO acepta argumentos.
+                    .fallbackToDestructiveMigration()
                     .build()
-                    .also { instance = it }
+                instance = newInstance
+                newInstance
             }
         }
     }

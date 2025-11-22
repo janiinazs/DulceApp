@@ -17,7 +17,7 @@
         app:layout_constraintBottom_toTopOf="@+id/app_title"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:tint="#8D6E63" />
+        android:tint="#8D6E63" />
 
     <TextView
         android:id="@+id/app_title"
@@ -90,16 +90,38 @@
         app:layout_constraintEnd_toEndOf="@+id/password_input_layout"
         app:layout_constraintStart_toStartOf="@+id/password_input_layout"
         app:layout_constraintTop_toBottomOf="@+id/password_input_layout"/>
+
     <TextView
         android:id="@+id/register_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="16dp"
         android:text="¿No tienes cuenta? Regístrate aquí"
         android:textColor="#8D6E63"
-        app:layout_constraintEnd_toEndOf="@+id/login_button"
-        app:layout_constraintHorizontal_bias="0.017"
         app:layout_constraintStart_toStartOf="@+id/login_button"
         app:layout_constraintTop_toBottomOf="@+id/login_button" />
+
+    <TextView
+        android:id="@+id/forgot_password_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="¿Olvidaste tu contraseña?"
+        android:textColor="#8D6E63"
+        app:layout_constraintStart_toStartOf="@+id/register_text"
+        app:layout_constraintTop_toBottomOf="@+id/register_text" />
+
+    <!-- TEXTO PARA MODO INVITADO -->
+    <TextView
+        android:id="@+id/guest_mode_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:text="Continuar como invitado"
+        android:textColor="#A1887F"
+        android:textStyle="italic"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/forgot_password_text" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

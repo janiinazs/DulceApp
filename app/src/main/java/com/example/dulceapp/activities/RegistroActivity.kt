@@ -1,115 +1,139 @@
 package com.example.dulceapp.activities
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.location.Location
 import android.os.Bundle
-import android.util.Patterns
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.lifecycle.lifecycleScope
-import com.example.dulceapp.R
-import com.example.dulceapp.entities.User
-import com.example.dulceapp.repo.UserRepository
-import com.example.dulceapp.database.AppDatabase
-import kotlinx.coroutines.launch
+import androidx.core.content.ContextCompat
 import com.example.dulceapp.databinding.ActivityRegistroBinding
+import com.example.dulceapp.entities.User
+import com.example.dulceapp.services.FirebaseService
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
+import com.google.firebase.auth.FirebaseAuthUserCollisionException
+import com.google.firebase.auth.FirebaseAuthWeakPasswordException
 
 class RegistroActivity : AppCompatActivity() {
-    private lateinit var userRepository: UserRepository
-    private lateinit var binding: ActivityRegistroBinding // <-- USA VIEW BINDING
+
+    private lateinit var binding: ActivityRegistroBinding
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private var userLocation: Location? = null
+
+    private val locationPermissionRequest = registerForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        when {
+            permissions.getOrDefault(Manifest.permission.ACCESS_FINE_LOCATION, false) -> {
+                getLastKnownLocation()
+            }
+            permissions.getOrDefault(Manifest.permission.ACCESS_COARSE_LOCATION, false) -> {
+                getLastKnownLocation()
+            }
+            else -> {
+                Toast.makeText(this, "El permiso de ubicación es necesario para el registro.", Toast.LENGTH_LONG).show()
+            }
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // 2. Infla el layout con View Binding.
         binding = ActivityRegistroBinding.inflate(layoutInflater)
-        // 3. Establece la vista con el root del binding.
         setContentView(binding.root)
 
-        // Inicializar repositorio (ajustar según cómo se inicialice AppDatabase en tu proyecto)
-        val userDao = AppDatabase.getDatabase(this).userDao() // Asegúrate de tener AppDatabase configurado
-        userRepository = UserRepository(userDao)
-
-        // Ajustar insets de sistema
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { view, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            view.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
         binding.buttonRegistrar.setOnClickListener {
-            val nombre = binding.editTextNombre.text.toString().trim()
-            val email = binding.editTextEmail.text.toString().trim()
-            val password = binding.editTextPassword.text.toString().trim()
-
-            // ==== LÓGICA DE VALIDACIÓN MEJORADA ====
-            var formValido = true
-
-            // Validar nombre
-            if (nombre.isEmpty()) {
-                binding.textInputLayoutNombre.error = "El nombre no puede estar vacío"
-                formValido = false
-            } else {
-                binding.textInputLayoutNombre.error = null
-            }
-
-            // Validar correo
-            if (email.isEmpty()) {
-                binding.textInputLayoutEmail.error = "El correo no puede estar vacío"
-                formValido = false
-            } else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-                binding.textInputLayoutEmail.error = "Formato de correo inválido"
-                formValido = false
-            } else {
-                binding.textInputLayoutEmail.error = null
-            }
-            // Validar contraseña
-            if (password.isEmpty()) {
-                binding.textInputLayoutPassword.error = "La contraseña no puede estar vacía"
-                formValido = false
-            } else if (password.length < 6) {
-                binding.textInputLayoutPassword.error = "La contraseña debe tener al menos 6 caracteres"
-                formValido = false
-            } else {
-                binding.textInputLayoutPassword.error = null
-            }
-
-            if (!formValido) {
-                return@setOnClickListener // Si hay errores, no continúes
-            }
-
-            // Intentar registrarse
-            lifecycleScope.launch {
-                try {
-                    val user = User(username = nombre, email = email, password = password)
-                    userRepository.signUp(user)
-//                    Toast.makeText(this@RegistroActivity, "Registro exitoso: $nombre", Toast.LENGTH_SHORT).show()
-//                    startActivity(Intent(this@RegistroActivity, LoginActivity::class.java))
-//                    finish()
-                    com.example.dulceapp.services.FirebaseService.saveUser(user) { success, errorMsg ->
-                        runOnUiThread {
-                            if (success) {
-                                Toast.makeText(this@RegistroActivity, "Registro exitoso: $nombre (local + firestore)", Toast.LENGTH_SHORT).show()
-                            } else {
-                                // We still consider the local registration successful, but inform about firestore issue.
-                                Toast.makeText(this@RegistroActivity, "Registro local OK, pero Firestore falló: ${errorMsg
-                                ?: "error desconocido"}", Toast.LENGTH_LONG).show()
-                            }
-                            startActivity(Intent(this@RegistroActivity, LoginActivity::class.java))
-                            finish()
-                        }
-                    }
-                } catch (e: Exception) {
-                    // Posible usuario duplicado
-                    binding.textInputLayoutEmail.error = "El correo o usuario ya existe"
-                }
-            }
+            checkLocationPermissionAndRegister()
         }
 
-        // Ir a LoginActivity desde el texto
         binding.textViewLogin.setOnClickListener {
-            startActivity(Intent(this, LoginActivity::class.java))
             finish()
+        }
+    }
+
+    private fun checkLocationPermissionAndRegister() {
+        when {
+            ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED -> {
+                getLastKnownLocation()
+            }
+            shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION) -> {
+                locationPermissionRequest.launch(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION))
+            }
+            else -> {
+                locationPermissionRequest.launch(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION))
+            }
+        }
+    }
+
+    private fun getLastKnownLocation() {
+        try {
+            fusedLocationClient.lastLocation
+                .addOnSuccessListener { location: Location? ->
+                    if (location != null) {
+                        userLocation = location
+                        registerUser()
+                    } else {
+                        Toast.makeText(this, "No se pudo obtener la ubicación. Activa el GPS y vuelve a intentarlo.", Toast.LENGTH_LONG).show()
+                    }
+                }
+        } catch (e: SecurityException) {
+            Toast.makeText(this, "Error de seguridad al obtener la ubicación.", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun registerUser() {
+        val username = binding.editTextNombre.text.toString().trim()
+        val email = binding.editTextEmail.text.toString().trim()
+        val password = binding.editTextPassword.text.toString().trim()
+        val confirmPassword = binding.editTextConfirmPassword.text.toString().trim()
+        val keyword = binding.editTextKeyword.text.toString().trim()
+
+        if (username.isEmpty() || email.isEmpty() || password.isEmpty() || confirmPassword.isEmpty() || keyword.isEmpty()) {
+            Toast.makeText(this, "Por favor, completa todos los campos.", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        if (password != confirmPassword) {
+            Toast.makeText(this, "Las contraseñas no coinciden.", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        if (userLocation == null) {
+            Toast.makeText(this, "No se ha podido obtener la ubicación para el registro.", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val user = User(
+            username = username,
+            email = email,
+            password = password,
+            role = "cliente",
+            latitude = userLocation!!.latitude,
+            longitude = userLocation!!.longitude,
+            keyword = keyword
+        )
+
+        FirebaseService.saveUser(user) { success, exception ->
+            if (success) {
+                Toast.makeText(this, "¡Registro exitoso! Por favor, inicia sesión.", Toast.LENGTH_LONG).show()
+                val intent = Intent(this, LoginActivity::class.java)
+                startActivity(intent)
+                finish()
+            } else {
+                // --- TRADUCTOR DE ERRORES DE FIREBASE ---
+                val errorMessage = when (exception) {
+                    is FirebaseAuthWeakPasswordException -> "La contraseña es demasiado débil. Debe tener al menos 6 caracteres."
+                    is FirebaseAuthInvalidCredentialsException -> "El formato del correo electrónico no es válido."
+                    is FirebaseAuthUserCollisionException -> "Este correo electrónico ya está en uso por otra cuenta."
+                    else -> "Error en el registro. Inténtalo de nuevo."
+                }
+                Toast.makeText(this, errorMessage, Toast.LENGTH_LONG).show()
+            }
         }
     }
 }

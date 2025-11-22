@@ -2,6 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
@@ -13,9 +16,73 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.DulceApp">
+
+
         <activity
-            android:name=".activities.MainActivity"
+            android:name=".activities.EditPromotionActivity"
             android:exported="false" />
+        <activity
+            android:name=".activities.ManagePromotionsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.AddPromotionActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".activities.EditProductActivity"
+            android:exported="false" />
+
+
+        <activity
+            android:name=".activities.ForgotPasswordActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".activities.ManageProductsActivity"
+            android:exported="false" />
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="com.example.dulceapp.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
+        <activity
+            android:name=".activities.AddProductActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".activities.OrderListActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".activities.UserListActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".activities.AdminHomeActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".activities.CheckoutActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".activities.ProfileActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".activities.CategoryActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".activities.HomeActivity"
+            android:exported="false" />
+
         <activity
             android:name=".activities.RegistroActivity"
             android:exported="false" />
